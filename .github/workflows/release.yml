@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest # Using ubuntu-latest as a base for cross-compilation
     strategy:
       matrix:
-        os: [linux, windows, darwin]
+        os: [linux, windows]
         arch: [amd64, arm64]
     steps:
       - name: Checkout code

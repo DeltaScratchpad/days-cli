@@ -9,12 +9,13 @@ This CLI calculates the number of days you need to be in the office based on the
 
 ## Installation
 
+### Prebuilt binaries (Linux & Windows)
+
 You can get a pre-built binary for your system from the GitHub Releases page.
 
 1. **Go to Releases:** Visit the [Releases page](https://github.com/DeltaScratchpad/days-cli/releases).
 2. **Download:** Find the latest release and download the appropriate binary for your operating system and architecture.
     * **Linux:** `days-linux-amd64` or `days-linux-arm64`
-    * **macOS:** `days-darwin-amd64` or `days-darwin-arm64`
     * **Windows:** `days-windows-amd64.exe` or `days-windows-arm64.exe`
 3. **Make Executable (Linux/macOS):** If you're on Linux or macOS, you might need to make the downloaded binary executable:
 
@@ -26,6 +27,32 @@ You can get a pre-built binary for your system from the GitHub Releases page.
 
     ```bash
     mv ./days-linux-amd64 /usr/local/bin/days # Rename for convenience
+    ```
+
+### Building from Source (macOS)
+
+If you prefer to build the `days` CLI from its source code on macOS, follow these steps:
+
+1. **Install Go:** Ensure you have Go installed on your system. You can download it from the [official Go website](https://go.dev/doc/install).
+2. **Clone the Repository:**
+
+    ```bash
+    git clone https://github.com/DeltaScratchpad/days-cli.git
+    cd days
+    ```
+
+3. **Build the Binary:**
+
+    ```bash
+    go build -o days .
+    ```
+
+    This command will compile the `days` application and create an executable named `days` in the current directory.
+4. **Install to /usr/local/bin:**
+    To make the `days` command available globally from any directory in your terminal, move the compiled binary to `/usr/local/bin`:
+
+    ```bash
+    sudo mv days /usr/local/bin/
     ```
 
 ## Usage
