@@ -1,0 +1,73 @@
+name: Go Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*' # Trigger on tags like v1.0.0, v1.0.1, etc.
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}-${{ matrix.arch }}
+    runs-on: ubuntu-latest # Using ubuntu-latest as a base for cross-compilation
+    strategy:
+      matrix:
+        os: [linux, windows, darwin]
+        arch: [amd64, arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24' # Specify your Go version here
+
+      - name: Build
+        run: |
+          # Determine the output file name based on OS and architecture
+          BINARY_NAME="days-${{ matrix.os }}-${{ matrix.arch }}"
+          if [ "${{ matrix.os }}" = "windows" ]; then
+            BINARY_NAME="${BINARY_NAME}.exe"
+          fi
+
+          # Set environment variables for cross-compilation
+          GOOS=${{ matrix.os }} GOARCH=${{ matrix.arch }} go build -o "./dist/${BINARY_NAME}" .
+        env:
+          CGO_ENABLED: 0 # Disable CGO for static binaries, generally good practice for CLI apps
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: days-${{ matrix.os }}-${{ matrix.arch }}
+          path: ./dist/days-${{ matrix.os }}-${{ matrix.arch }}* # Upload the built binary
+          if-no-files-found: error # Fail if no files are found to upload
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build # This job depends on the 'build' job completing successfully
+    if: startsWith(github.ref, 'refs/tags/') # Only run this job if the workflow was triggered by a tag
+
+    steps:
+      - name: Download all built artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./release_artifacts # Download all artifacts into this directory
+
+      - name: List downloaded artifacts (for debugging)
+        run: ls -R ./release_artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./release_artifacts/**/* # Upload all files from the downloaded artifacts directory
+          body: |
+            # Release ${{ github.ref_name }}
+
+            This release includes pre-built binaries for various platforms.
+            Please download the appropriate binary for your system.
+          prerelease: false # Set to true if this is a pre-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub Token is automatically provided
