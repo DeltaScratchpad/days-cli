@@ -43,7 +43,7 @@ For help:
 To set up a bash alias with the ratio fixed to 0.5, add the following to your shell config (e.g. ~/.bashrc or ~/.zshrc):
 
 ```bash
-alias days50="[saved location]/days -ratio 0.5"
+alias days="[saved location]/days -ratio 0.5"
 ```
 
 Reload your shell with:
